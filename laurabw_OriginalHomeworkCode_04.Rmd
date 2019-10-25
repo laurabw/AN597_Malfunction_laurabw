@@ -51,7 +51,70 @@ started by looking at what the t.test function involves, based on the Help menu:
     t.test(formula, data, subset, na.action, ...)
     
 I also looked up some resources on z-tests and scores, and while I get the concept, I am still feeling not 
-confident at writing equations. I am going to go on with this homework and if I have time to come back I will. 
+confident at writing functions. I am going to go on with this homework and if I have time to come back I will. 
 Hopefully my peer commentators will have some thoughts on this as well!
+
+## Part 2
+
+The dataset from Kamilar and Cooper has in it a large number of variables related to life history and body size.
+For this exercise, the end aim is to fit a simple linear regression model to predict longevity
+(**MaxLongevity_m**) measured in months from species’ brain size (**Brain_Size_Species_Mean**) measured in grams.
+Do the following for both **longevity~brain size** and **log(longevity)~log(brain size)**:
+
+* Fit the regression model and, using {ggplot2}, produce a scatterplot with the fitted line superimposed upon the
+data. Append the the fitted model equation to your plot (HINT: use the function geom_text()).
+
+* Identify and interpret the point estimate of the slope (*β*1), as well as the outcome of the test associated
+with the hypotheses H0: *β*1 = 0; HA: *β1* ≠ 0. Also, find a 90 percent CI for the slope (*β*1) parameter.
+
+* Using your model, add lines for the 90 percent confidence and prediction interval bands on the plot and add a
+legend to differentiate between the lines.
+
+* Produce a point estimate and associated 90 percent PI for the longevity of a species whose brain weight is 800
+gm. Do you trust the model to predict observations accurately for this value of the explanatory variable? Why or
+why not?
+
+* Looking at your two models, which do you think is better? Why?
+
+Okay, so let's first load this data set:
+
+```{r}
+library(ggplot2)
+library(dplyr)
+library(curl)
+f <- curl("https://raw.githubusercontent.com/fuzzyatelin/fuzzyatelin.github.io/master/AN597_Fall19/KamilarAndCooperData.csv")
+d <- read.csv(f, header = TRUE, sep = ",", stringsAsFactors = FALSE)
+head(d)
+```
+
+Now, let's try to answer the questions for **longevity~brain size**, using what we learned in Modules 12 and 13:
+
+*Fit the regression model and, using {ggplot2}, produce a scatterplot with the fitted line superimposed upon the
+data. Append the the fitted model equation to your plot (HINT: use the function geom_text()).*
+
+```{r}
+l_bs <- lm(MaxLongevity_m ~ Brain_Size_Species_Mean, data = d)
+l_bs
+names(l_bs)
+l_bs$coefficients
+head(l_bs$model)
+```
+
+Ok, have our model, now let's put it on a scatterplot:
+```{r}
+l_bs_plot <- ggplot(data = d, aes(x = MaxLongevity_m, y = Brain_Size_Species_Mean))
+l_bs_plot <- l_bs_plot + geom_point()
+l_bs_plot <- l_bs_plot + geom_smooth(method = "lm", formula = y ~ x)
+l_bs_plot <- l_bs_plot + ggtitle("Linear Regression of Brain Size and Longetivty") + xlab("Longevity (years)") + ylab("Brain Size (grams)")
+l_bs_plot
+```
+
+This worked, though I had to look up again how to change labels. I worked for awhile with the geom_text()
+function and could not get it to work how I wanted, though I do feel like I learned a lot about the function
+itself. Will keep trying. On to the next step:
+
+*Identify and interpret the point estimate of the slope (*β*1), as well as the outcome of the test associated
+with the hypotheses H0: * *β* *1 = 0; HA: * *β1* *≠ 0. Also, find a 90 percent CI for the slope (* *β* *1)
+parameter.*
 
 
