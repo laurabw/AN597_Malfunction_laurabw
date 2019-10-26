@@ -105,7 +105,7 @@ Ok, have our model, now let's put it on a scatterplot:
 l_bs_plot <- ggplot(data = d, aes(x = MaxLongevity_m, y = Brain_Size_Species_Mean))
 l_bs_plot <- l_bs_plot + geom_point()
 l_bs_plot <- l_bs_plot + geom_smooth(method = "lm", formula = y ~ x)
-l_bs_plot <- l_bs_plot + ggtitle("Linear Regression of Brain Size and Longetivty") + xlab("Longevity (years)") + ylab("Brain Size (grams)")
+l_bs_plot <- l_bs_plot + ggtitle("Linear Regression of Brain Size and Longetivty") + xlab("Longevity") + ylab("Brain Size (grams)")
 l_bs_plot
 ```
 
@@ -117,4 +117,132 @@ itself. Will keep trying. On to the next step:
 with the hypotheses H0: * *β* *1 = 0; HA: * *β1* *≠ 0. Also, find a 90 percent CI for the slope (* *β* *1)
 parameter.*
 
+```{r}
+beta1 <- cor(d$Brain_Size_Species_Mean, d$MaxLongevity_m) * sd(d$Brain_Size_Species_Mean)/sd(d$MaxLongevity_m)
+beta1
+```
 
+Ok, that cannot be right? Let's try this:
+
+```{r}
+l_bs <- lm(MaxLongevity_m ~ Brain_Size_Species_Mean, data = d)
+l_bs
+names(l_bs)
+l_bs$coefficients
+```
+
+When we did this, we got the intercept, but not sure then how to find the slope? Sorry, just did not have enough
+time to dedicate to this particular homework.
+
+```{r}
+ci <- confint(l_bs, level = 0.90)  # using the results of lm()
+ci
+```
+
+Ok, this looks alright for confidence intervals? Thank goodness for built-in functions, am I right??
+
+Now on to plotting CIs.
+
+```{r}
+m <- lm(data = d, d$Brain_Size_Species_Mean ~ d$MaxLongevity_m)
+h_hat <- predict(m, newdata = data.frame(long = d$MaxLongevity_m))
+df <- data.frame(cbind(d$MaxLongevity_m,d$Brain_Size_Species_Mean, h_hat))
+names(df) <- c("x", "y", "yhat")
+head(df)
+g <- ggplot(data = df, aes(x = x, y = yhat))
+g <- g + geom_point()
+g <- g + geom_point(aes(x = x, y = y), colour = "red")
+g <- g + geom_segment(aes(x = x, y = yhat, xend = x, yend = y))
+g
+```
+
+Ok, this took awhile to figure out and still not sure if it is right? But similar to something we did in Module
+12. Still need to learn how to do a legend!
+
+Now try to find a point estimate and PIs for 800 grams specifically.
+
+```{r}
+pi <- predict(m, newdata = data.frame(Brain_Size_Species_Mean = 800), interval = "prediction", 
+    level = 0.90)  # for a single value
+pi
+```
+
+Ok, so in Module 12 this same process returned only 1 value, so not sure what is going on here? I must be missing
+something. And not sure if these numbers are right.
+
+Now we will try this all again with the log function added before each variable to transform the data. Here is the plot
+
+```{r}
+d$logBrainSize <- log(d$Brain_Size_Species_Mean)
+d$logMaxLong <- log(d$MaxLongevity_m)
+plot(data = d, logBrainSize ~ logMaxLong)
+```
+
+And let's do the model:
+
+```{r}
+log_model <- lm(data = d, logBrainSize ~ logMaxLong)
+summary(log_model)
+```
+
+And the plot for this model:
+
+```{r}
+plot(log_model)
+```
+
+```{r}
+logl_bs_plot <- ggplot(data = d, aes(x = logMaxLong, y = logBrainSize))
+logl_bs_plot <- logl_bs_plot + geom_point()
+logl_bs_plot <- logl_bs_plot + geom_smooth(method = "lm", formula = y ~ x)
+logl_bs_plot <- logl_bs_plot + ggtitle("Linear Regression of Brain Size and Longetivty") + xlab("Longevity") + ylab("Brain Size (grams)")
+logl_bs_plot
+```
+
+This plot looks like what we got with the untransformed data, so we can compare. It does make the relationship
+look more strongly (positiviely) correlated, though both look linear.
+
+Confidence intervals:
+
+```{r}
+ci <- confint(log_model, level = 0.90)  # using the results of lm()
+ci
+```
+
+This looks okay, though still feel like I need to get better at what these numbers actually mean. That would help
+with being able to gauge if my answers are correct or not.
+
+Here are the plotted CIs:
+
+```{r}
+m <- lm(data = d, log(d$Brain_Size_Species_Mean) ~ log(d$MaxLongevity_m))
+h_hat <- predict(m, newdata = data.frame(long = d$MaxLongevity_m))
+df <- data.frame(cbind(log(d$MaxLongevity_m),log(d$Brain_Size_Species_Mean), h_hat))
+names(df) <- c("x", "y", "yhat")
+head(df)
+g <- ggplot(data = df, aes(x = x, y = yhat))
+g <- g + geom_point()
+g <- g + geom_point(aes(x = x, y = y), colour = "red")
+g <- g + geom_segment(aes(x = x, y = yhat, xend = x, yend = y))
+g
+```
+
+Not sure if I can do the point estimate for 800 grams since it is transformed now?
+
+```{r}
+pi <- predict(m, newdata = data.frame(Brain_Size_Species_Mean = 800), interval = "prediction", 
+    level = 0.90)  # for a single value
+pi
+```
+
+Ok, it came up, but with 200 values again. Not sure how to fix that.
+
+## Challenges:
+
+This one was really tough for me! Which was frustrating as the last couple of homeworks, I really felt like I was
+getting it. I am looking forward to seeing what my peers came up with and going over it in class.
+
+1. Apparently I have no idea how to make a function as asked for in Part 1! This is a skill I need to work on as
+I think it will be extremely helpful as I start evaluating my own data for my dissertation.
+
+2. 
