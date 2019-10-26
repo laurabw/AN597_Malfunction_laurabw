@@ -245,4 +245,10 @@ getting it. I am looking forward to seeing what my peers came up with and going 
 1. Apparently I have no idea how to make a function as asked for in Part 1! This is a skill I need to work on as
 I think it will be extremely helpful as I start evaluating my own data for my dissertation.
 
-2. 
+2. OVerall, just relearning my stats and knowing what all of this is actually telling me!
+
+3. Had an issue with the PI giving me a ton of values though I thought I set it up for only one. Not sure how to
+change this.
+
+4. Learning how to put text and legends on graphics! This will come in handy, so will be teaching myself this and
+asking questions about it.
